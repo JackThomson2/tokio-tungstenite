@@ -24,7 +24,7 @@ pin-project = "0.4.23"
 tokio = { version = "0.2", default-features = false, features = ["io-util"] }
 
 [dependencies.tungstenite]
-git = "https://github.com/jean-airoldie/tungstenite-rs"
+git = "https://github.com/JackThomson2/tungstenite-rs"
 branch = "shared"
 default-features = false
 
