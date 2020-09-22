@@ -45,7 +45,7 @@ use tungstenite::{
         server::{Callback, NoCallback},
         HandshakeError,
     },
-    protocol::{Message, Role, WebSocket, WebSocketConfig},
+    protocol::{EitherMessage, Message, Role, WebSocket, WebSocketConfig},
     server,
 };
 
@@ -259,7 +259,7 @@ impl<S> WebSocketStream<S> {
         S: AsyncRead + AsyncWrite + Unpin,
     {
         let msg = msg.map(|msg| msg.into_owned());
-        self.send(Message::Close(msg)).await
+        self.send(Message::Close(msg).into()).await
     }
 }
 
@@ -286,7 +286,7 @@ where
     }
 }
 
-impl<T> Sink<Message> for WebSocketStream<T>
+impl<T> Sink<EitherMessage> for WebSocketStream<T>
 where
     T: AsyncRead + AsyncWrite + Unpin,
 {
@@ -296,8 +296,11 @@ where
         (*self).with_context(Some((ContextWaker::Write, cx)), |s| cvt(s.write_pending()))
     }
 
-    fn start_send(mut self: Pin<&mut Self>, item: Message) -> Result<(), Self::Error> {
-        match (*self).with_context(None, |s| s.write_message(item)) {
+    fn start_send(mut self: Pin<&mut Self>, item: EitherMessage) -> Result<(), Self::Error> {
+        match (*self).with_context(None, |s| match item {
+            EitherMessage::Message(message) => s.write_message(message),
+            EitherMessage::SharedMessage(message) => s.write_shared_message(message)
+        }) {
             Ok(()) => Ok(()),
             Err(::tungstenite::Error::Io(ref err))
                 if err.kind() == std::io::ErrorKind::WouldBlock =>
