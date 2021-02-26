@@ -14,14 +14,14 @@ edition = "2018"
 [features]
 default = ["connect"]
 connect = ["stream", "tokio/net"]
-tls = ["native-tls", "tokio-native-tls", "stream", "tungstenite/tls"]
+tls = ["native-tls", "tokio-native-tls", "stream", "tungstenite/native-tls"]
 stream = []
 
 [dependencies]
 log = "0.4"
 futures-util = { version = "0.3", default-features = false, features = ["async-await", "sink", "std"] }
-pin-project = "0.4.17"
-tokio = { version = "0.3", default-features = false, features = ["io-util"] }
+pin-project = "1.0.4"
+tokio = { version = "1.2.0", default-features = false, features = ["io-util"] }
 
 [dependencies.tungstenite]
 git = "https://github.com/JackThomson2/tungstenite-rs"
@@ -34,10 +34,10 @@ version = "0.2.4"
 
 [dependencies.tokio-native-tls]
 optional = true
-version = "0.2"
+version = "0.3"
 
 [dev-dependencies]
 futures-channel = "0.3"
-tokio = { version = "0.3", default-features = false, features = ["io-std", "macros", "rt-multi-thread", "stream", "time"] }
+tokio = { version = "1.2.0", default-features = false, features = ["rt-multi-thread", "process", "net", "time"] }
 url = "2.0.0"
-env_logger = "0.7"
+env_logger = "0.8"
